@@ -247,9 +247,10 @@ function toggleListening() {
   } else {
     isContinuousLoop = true;
     if (isSpeaking) synth.cancel();
-    try {
-      recognition.start();
-    } catch (e) {}
+    const greeting = "Hello! How may I assist you today?";
+    liveTranscript.classList.remove('placeholder');
+    liveTranscript.textContent = greeting;
+    speakAIResponse(greeting);
   }
 }
 
