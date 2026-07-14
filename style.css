@@ -1,0 +1,262 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg-primary: #fcfbf9;
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --accent-peach: #fb923c;
+  --accent-rose: #f43f5e;
+  --accent-amber: #f59e0b;
+  --accent-sage: #10b981;
+  --accent-lavender: #c084fc;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(circle at 50% 15%, #ffffff 0%, #fefcfb 50%, #f6f0ea 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow-x: hidden;
+}
+
+/* Soft Light Pastel Ambient Glows */
+.ambient-glow {
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(140px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+}
+
+.ambient-top {
+  top: -150px;
+  left: 15%;
+  background: #fed7aa; /* Soft champagne peach */
+}
+
+.ambient-bottom {
+  bottom: -150px;
+  right: 15%;
+  background: #fce7f3; /* Soft pastel pink */
+}
+
+.minimal-container {
+  width: 100%;
+  max-width: 540px;
+  padding: 2.5rem 1.5rem;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Interactive Voice Orb */
+.orb-container {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+/* Multi-Layer Ripple Rings */
+.orb-ripple {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(1);
+  transition: all 0.4s ease;
+}
+
+.voice-orb {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  /* Idle State: Warm Peach & Rose Pastel Gradient */
+  background: linear-gradient(135deg, #f472b6, #fb923c);
+  box-shadow: 0 15px 35px -5px rgba(251, 146, 60, 0.35);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 2;
+  user-select: none;
+}
+
+.voice-orb:hover {
+  transform: scale(1.05);
+  box-shadow: 0 20px 45px -5px rgba(244, 114, 182, 0.45);
+}
+
+.orb-icon {
+  width: 44px;
+  height: 44px;
+  color: #ffffff;
+  transition: transform 0.3s ease;
+}
+
+/* LISTENING STATE: Sonar Radar Wave Animation */
+.orb-container.listening .orb-ripple {
+  border: 2px solid #10b981;
+  background: radial-gradient(circle, rgba(52, 211, 153, 0.22) 0%, rgba(16, 185, 129, 0) 70%);
+  animation: radar-sonar-wave 2.4s infinite cubic-bezier(0.1, 0.8, 0.3, 1);
+}
+
+.orb-container.listening .ripple-1 { animation-delay: 0s; }
+.orb-container.listening .ripple-2 { animation-delay: 0.8s; }
+.orb-container.listening .ripple-3 { animation-delay: 1.6s; }
+
+.orb-container.listening .voice-orb {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  box-shadow: 0 0 45px rgba(16, 185, 129, 0.55), 0 0 85px rgba(52, 211, 153, 0.35);
+  animation: pulse-listening 1.8s infinite ease-in-out;
+}
+
+@keyframes radar-sonar-wave {
+  0% { transform: scale(1); opacity: 0.85; }
+  100% { transform: scale(2.3); opacity: 0; }
+}
+
+@keyframes pulse-listening {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(16, 185, 129, 0.45); }
+  50% { transform: scale(1.08); box-shadow: 0 0 70px rgba(16, 185, 129, 0.7); }
+}
+
+/* THINKING STATE: Luminous Lavender Rotation */
+.orb-container.thinking .voice-orb {
+  background: linear-gradient(135deg, #c084fc, #f472b6);
+  box-shadow: 0 0 50px rgba(192, 132, 252, 0.55);
+  animation: pulse-thinking 1s infinite alternate;
+}
+
+/* SPEAKING STATE: Soundwave Vibration & Coral Bloom */
+.orb-container.speaking .orb-ripple {
+  border: 2.5px solid #fb7185;
+  background: radial-gradient(circle, rgba(251, 113, 133, 0.25) 0%, rgba(245, 158, 11, 0) 75%);
+  animation: soundwave-vibration 1s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.orb-container.speaking .ripple-1 { animation-delay: 0s; }
+.orb-container.speaking .ripple-2 { animation-delay: 0.33s; }
+.orb-container.speaking .ripple-3 { animation-delay: 0.66s; }
+
+.orb-container.speaking .voice-orb {
+  background: linear-gradient(135deg, #fb7185, #f59e0b);
+  box-shadow: 0 0 50px rgba(251, 113, 133, 0.65), 0 0 95px rgba(245, 158, 11, 0.45);
+  animation: pulse-speaking 0.45s infinite alternate ease-in-out;
+}
+
+@keyframes soundwave-vibration {
+  0% { transform: scale(1.05); opacity: 0.7; }
+  100% { transform: scale(1.75); opacity: 0; }
+}
+
+@keyframes pulse-thinking {
+  0% { transform: scale(0.96) rotate(0deg); }
+  100% { transform: scale(1.06) rotate(180deg); }
+}
+
+@keyframes pulse-speaking {
+  0% { transform: scale(0.98); }
+  100% { transform: scale(1.16); }
+}
+
+/* Status & Subtext */
+.orb-status {
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.35rem;
+  color: var(--text-primary);
+}
+
+.orb-subtext {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+/* Minimalist Live Transcript Pill */
+.live-transcript-pill {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 10px 25px -5px rgba(30, 41, 59, 0.04);
+  border-radius: 20px;
+  padding: 1.1rem 1.5rem;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.live-transcript-text {
+  font-size: 1.05rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.live-transcript-text.placeholder {
+  color: var(--text-muted);
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* Control Buttons */
+.controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.9rem 2.2rem;
+  border-radius: 9999px;
+  font-size: 0.98rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+  outline: none;
+}
+
+/* Warm Charcoal button grounded against the pastel canvas */
+.btn-primary {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  color: #ffffff;
+  box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.25);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px -5px rgba(15, 23, 42, 0.32);
+}

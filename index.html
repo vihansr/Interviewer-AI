@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Antigravity Voice AI</title>
+  <meta name="description" content="Minimalist real-time AI audio conversation powered by Groq and native browser speech recognition." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="ambient-glow ambient-top"></div>
+  <div class="ambient-glow ambient-bottom"></div>
+
+  <main class="minimal-container">
+    <!-- Interactive Voice Orb with Multi-Layer Ripples -->
+    <div class="orb-container" id="orb-container">
+      <div class="orb-ripple ripple-1"></div>
+      <div class="orb-ripple ripple-2"></div>
+      <div class="orb-ripple ripple-3"></div>
+      <div class="voice-orb" id="voice-orb" role="button" tabindex="0" aria-label="Click to start or stop voice conversation">
+        <svg class="orb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" x2="12" y1="19" y2="22"></line>
+        </svg>
+      </div>
+    </div>
+
+    <div class="orb-status" id="orb-status-text">Tap the orb to speak</div>
+    <div class="orb-subtext" id="orb-subtext">Continuous voice mode ready</div>
+
+    <!-- Minimalist Live Transcript Pill -->
+    <div class="live-transcript-pill">
+      <p class="live-transcript-text placeholder" id="live-transcript">
+        Listening...
+      </p>
+    </div>
+
+    <!-- Hidden controls so script references remain safe -->
+    <div class="controls-row" style="display: none;">
+      <button id="toggle-btn" type="button"></button>
+
+      <!-- Hidden voice select & clear button so script references remain safe if needed -->
+      <button id="clear-btn" type="button" style="display: none;"></button>
+      <select id="voice-select" style="display: none;"></select>
+      <div id="history-list" style="display: none;"></div>
+    </div>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

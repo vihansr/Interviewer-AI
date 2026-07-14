@@ -1,0 +1,10 @@
+# Environment Variables & Secrets
+.env
+.env.*
+*.env
+
+# Python Cache & Logs
+__pycache__/
+*.pyc
+*.pyo
+*.log
