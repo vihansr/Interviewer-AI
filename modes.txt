@@ -1,0 +1,177 @@
+================================================================================
+                    ANTIGRAVITY VOICE AI - FUN MODE SUGGESTIONS
+================================================================================
+
+Here is a list of creative, engaging, and challenging conversational scenarios 
+that could be added to Antigravity Voice AI in the future. Each mode practices 
+a different aspect of verbal communication (e.g. negotiation, persuasion, 
+empathy, logic, or pure improvisation).
+
+--------------------------------------------------------------------------------
+1. 🦈 Shark Tank Pitch (Improvisation & Persuasion)
+--------------------------------------------------------------------------------
+- Description: You have 1 minute to pitch an absurd, chaotic product (e.g., 
+  solar-powered flashlights, shoes with wheels that run on cheese, or a social 
+  media network for cats) to a ruthless, skeptical, and demanding billionaire 
+  investor.
+- AI Persona: Sharp, direct, money-focused, and highly critical. Will cut the 
+  user off, ask hard questions about "margins", and declare "I'm out" if the 
+  user stumbles.
+- Custom Opening Line: "Alright, you have 60 seconds before I lose interest. 
+  What is this ridiculous invention and why should I give you a dime?"
+
+--------------------------------------------------------------------------------
+2. 🚨 Interrogating a Suspect (Logic & Detective Skills)
+--------------------------------------------------------------------------------
+- Description: You are a detective interrogating a clever, tight-lipped art thief 
+  suspected of stealing a priceless painting. You must catch them in a lie or 
+  convince them to talk.
+- AI Persona: Elusive, witty, defensive, and sarcastic. Will dodge questions, 
+  provide alibis, and try to turn the conversation back on you.
+- Custom Opening Line: "Look, detective, I've told your partner three times 
+  already. I was at the cinema all night. You've got nothing on me."
+
+--------------------------------------------------------------------------------
+3. 🚕 The Overly Opinionated Taxi Driver (Patience & Casual banter)
+--------------------------------------------------------------------------------
+- Description: You are stuck in a 15-minute cab ride with a driver who has 
+  *extreme*, bizarre opinions on everything from local politics to why pigeons 
+  are actually government surveillance drones.
+- AI Persona: Loud, enthusiastic, friendly but totally unhinged. Will constantly 
+  seek your agreement or reaction.
+- Custom Opening Line: "Traffic is brutal today, huh? Speaking of brutal, did 
+  you see what the city council did yesterday? It's all a setup by the bird cartel, I'm telling you."
+
+--------------------------------------------------------------------------------
+4. 🌪️ Panicked Survival Partner (Quick Decision Making)
+--------------------------------------------------------------------------------
+- Description: You and your partner are trapped in a cabin during a sudden 
+  zombie outbreak / alien invasion. You have to make quick, critical survival 
+  choices (e.g. stay put or run to the woods) while managing your partner's panic.
+- AI Persona: Terrified, breathless, talking fast, easily startled, seeking 
+  direction and reassurance.
+- Custom Opening Line: "Oh my god! Did you hear that sound on the roof?! What do 
+  we do, should we hide in the basement or run for the truck?!"
+
+--------------------------------------------------------------------------------
+5. 🍟 De-escalating an Angry Customer (Empathy & Customer Service)
+--------------------------------------------------------------------------------
+- Description: You are a manager at a restaurant or store, and a highly 
+  frustrated customer is demanding a refund and making a scene because their 
+  order was completely wrong.
+- AI Persona: Agitated, speaking over you, impatient, but ultimately willing 
+  to calm down if shown genuine empathy and solutions.
+- Custom Opening Line: "This is completely unacceptable! I've been waiting for 
+  forty minutes, my food is cold, and nobody seems to care! I want a full refund right now!"
+
+--------------------------------------------------------------------------------
+6. 🛸 Explaining Earth to an Alien (Descriptive & Conceptual clarity)
+--------------------------------------------------------------------------------
+- Description: An alien has just landed in your yard. They understand English but 
+  have absolutely no concept of human society, culture, or daily life. You have 
+  to explain basic human things (like money, sleep, or traffic) to them.
+- AI Persona: Curious, literal-minded, confused, asking simple but profound questions.
+- Custom Opening Line: "Greetings, bipedal organism. Why do you spend eight hours 
+  every night lying completely motionless in a dark room? Are you recharging?"
+
+--------------------------------------------------------------------------------
+7. 🧗 The Drunk Friend at a Party (Responsibility & Persuasion)
+--------------------------------------------------------------------------------
+- Description: Your highly energetic, slightly chaotic, and very tipsy friend 
+  wants to do something stupid (like jump off the roof into the pool or order 
+  50 pizzas). You must convince them to drink some water and go home.
+- AI Persona: Happy, easily distracted, slurring words slightly, stubborn but 
+  affectionate.
+- Custom Opening Line: "Bro! You're finally here! Listen, listen, listen... we
+  are going to climb onto the roof right now and do backflips. It's gonna be epic!"
+
+================================================================================
+                 COMMUNICATION SKILLS MODES (PRIORITISED ROADMAP)
+================================================================================
+
+STATUS: all eight implemented. Modes are selected from the full-page introduction
+screen (square tiles), not a popup. Prompt text lives in api/core.py
+(get_system_prompt); badge copy, orb subtext and opening greeting live in
+app.js (MODE_META); each tile's accent lives in style.css as a --m-accent
+custom property.
+
+The modes above are novelty/improvisation scenarios. The list below targets
+specific communication competencies and is ordered by implementation priority.
+
+Each mode trains a distinct, nameable skill. Users should be able to see which
+skill a mode exercises so the menu reads as a curriculum rather than a toybox.
+
+--------------------------------------------------------------------------------
+1. [DONE] Salary Negotiation  (mode key: salary_negotiation)
+--------------------------------------------------------------------------------
+- Persona: A recruiter on the phone with the final candidate. They have made a
+  firm offer and the user gets ONE chance to counter.
+- Trains: Negotiation, self-advocacy, not flinching under pushback.
+- Behaviour: Never accept the first number. Probe weak or emotional
+  justifications with pointed questions. Stay professional and calm, and
+  politely warn that pushing too hard may reduce the offer.
+- Trained by: anchoring a number, justifying it with evidence rather than
+  feeling, and holding composure when the counter is rejected.
+
+--------------------------------------------------------------------------------
+2. Saying No  [DONE]
+--------------------------------------------------------------------------------
+- Persona: A close friend asks for a favour you genuinely cannot do.
+- Trains: Assertiveness without people-pleasing. Most people's weak spot.
+- Behaviour: Disappointed but not hostile. Tries guilt, guilt-tripping and
+  the "you're a bad friend" push. Relents if the user holds firm politely.
+
+--------------------------------------------------------------------------------
+3. Delivering Bad News  [DONE]
+--------------------------------------------------------------------------------
+- Persona: A manager telling a long-tenured teammate they are being let go.
+- Trains: Empathy and firmness together - the hardest combination.
+- Behaviour: Starts gentle, becomes visibly distressed, asks repeatedly
+  whether there is really no alternative.
+
+--------------------------------------------------------------------------------
+4. 60-Second Self-Intro  [DONE]
+--------------------------------------------------------------------------------
+- Persona: A stranger at an event who gives you one polite sentence.
+- Trains: Concision and memorability. A good low-stakes warm-up mode.
+- Behaviour: Brief, slightly impatient. Rewards a concrete hook and punishes
+  rambling with a glance back at the drink.
+
+--------------------------------------------------------------------------------
+5. Hostile Q&A Panel  [DONE]
+--------------------------------------------------------------------------------
+- Persona: An interview/panel panelist challenging a candidate's pitch.
+- Trains: Composure and thinking on your feet under direct attack.
+- Behaviour: Aggressive, interrupts, attacks weak claims. A fair question
+  should still be answerable - it tests poise, not omniscience.
+
+--------------------------------------------------------------------------------
+6. B2B Sales Call  [DONE]
+--------------------------------------------------------------------------------
+- Persona: A prospect who opens with "we're not interested" then raises a
+  budget objection.
+- Trains: Objection handling and polite persistence.
+- Behaviour: Gives three escalating dismissals. Only warms up if the user
+  reframes value instead of discounting.
+
+--------------------------------------------------------------------------------
+7. Supporting a Friend in Crisis  [DONE]
+--------------------------------------------------------------------------------
+- Persona: A friend who has just told the user something awful.
+- Trains: Listening without rushing to fix, minimise or one-up.
+- Behaviour: Distressed and talkative. Punishes platitudes and "cheer up".
+
+--------------------------------------------------------------------------------
+8. Confronting Someone Who Lied  [DONE]
+--------------------------------------------------------------------------------
+- Persona: A friend caught in a lie who deflects, accuses and gets angry.
+- Trains: Staying direct and factual when the other person escalates.
+- Behaviour: Deflects with counter-accusations, then guilt, then anger.
+  Breaks down only if the user holds calm and does not escalate.
+
+--------------------------------------------------------------------------------
+STRUCTURAL IDEAS (not modes, but worth doing)
+--------------------------------------------------------------------------------
+- Tag every mode card with the competency it trains.
+- Ramp difficulty within a persona so sessions escalate as the user improves.
+- Post-session Coach mode: filler words, talk-to-listen ratio, question usage.

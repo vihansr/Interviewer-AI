@@ -1,94 +1,64 @@
-from http.server import BaseHTTPRequestHandler
+"""Vercel serverless entrypoint for Antigravity Voice AI.
+
+Handles POST /api/chat (routed here by vercel.json). All logic lives in
+`core`, which is shared with the local development server.
+"""
+
 import json
+import logging
 import os
-from openai import OpenAI
-from dotenv import load_dotenv
+import sys
+from http.server import BaseHTTPRequestHandler
 
-# Load environment variables (Vercel sets these automatically from project settings)
-load_dotenv()
+# Ensure the shared module resolves whether or not the runtime already has
+# this function's directory on sys.path.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)
 
-GROQ_API_KEY = os.getenv("GROQ_API") or os.getenv("GROQ_API_KEY")
-NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY")
+from core import MAX_BODY_BYTES, handle_chat_request  # noqa: E402
 
-if GROQ_API_KEY:
-    llm_client = OpenAI(
-        base_url="https://api.groq.com/openai/v1",
-        api_key=GROQ_API_KEY
-    )
-    MODEL_NAME = "llama-3.1-8b-instant"
-elif NVIDIA_API_KEY:
-    llm_client = OpenAI(
-        base_url="https://integrate.api.nvidia.com/v1",
-        api_key=NVIDIA_API_KEY
-    )
-    MODEL_NAME = "meta/llama-3.3-70b-instruct"
-else:
-    llm_client = None
-    MODEL_NAME = None
+log = logging.getLogger("antigravity.api")
+
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        content_length = int(self.headers.get("Content-Length", 0))
-        post_data = self.rfile.read(content_length)
-
-        if not llm_client:
-            self.send_response(500)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                "status": "error",
-                "message": "Missing API Key. Please set GROQ_API in your Vercel Project Environment Variables."
-            }).encode("utf-8"))
+        if self.path not in ("/api/chat", "/api/chat.py", "/"):
+            self.send_json(404, {"status": "error", "message": "Endpoint not found."})
             return
 
         try:
-            payload = json.loads(post_data.decode("utf-8"))
-            user_message = payload.get("message", "").strip()
-            history = payload.get("history", [])
+            content_length = int(self.headers.get("Content-Length") or 0)
+        except (TypeError, ValueError):
+            self.send_json(400, {"status": "error", "message": "Invalid Content-Length header."})
+            return
 
-            messages = [
-                {
-                    "role": "system",
-                    "content": (
-                        "You are Antigravity Voice, an ultra-fast, natural-sounding voice AI assistant. "
-                        "Give concise, conversational answers (1 to 3 sentences maximum) suitable for speech synthesis. "
-                        "Do not use markdown, emojis, or bullet points."
-                    )
-                }
-            ]
+        if content_length <= 0:
+            self.send_json(400, {"status": "error", "message": "Empty request body."})
+            return
 
-            # Include recent conversation turns (sliding window of 6)
-            for turn in history[-6:]:
-                role = turn.get("role", "user")
-                content = turn.get("content", "")
-                if role in ["user", "assistant"] and content:
-                    messages.append({"role": role, "content": content})
+        if content_length > MAX_BODY_BYTES:
+            self.send_json(413, {"status": "error", "message": "Request body too large."})
+            return
 
-            messages.append({"role": "user", "content": user_message})
+        raw_body = self.rfile.read(content_length)
 
-            response = llm_client.chat.completions.create(
-                model=MODEL_NAME,
-                messages=messages,
-                temperature=0.6,
-                max_tokens=100
-            )
+        try:
+            payload = json.loads(raw_body.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+            self.send_json(400, {"status": "error", "message": f"Malformed JSON body: {exc}"})
+            return
 
-            ai_reply = response.choices[0].message.content.strip()
+        status_code, data = handle_chat_request(payload)
+        self.send_json(status_code, data)
 
-            self.send_response(200)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                "status": "success",
-                "reply": ai_reply,
-                "model": MODEL_NAME
-            }).encode("utf-8"))
+    def send_json(self, status_code: int, data: dict):
+        encoded = json.dumps(data).encode("utf-8")
+        self.send_response(status_code)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(encoded)))
+        self.end_headers()
+        self.wfile.write(encoded)
 
-        except Exception as e:
-            self.send_response(500)
-            self.send_header("Content-Type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps({
-                "status": "error",
-                "message": str(e)
-            }).encode("utf-8"))
+    def log_message(self, format, *args):
+        log.info("%s - %s", self.address_string(), format % args)

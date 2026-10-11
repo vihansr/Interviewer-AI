@@ -4,46 +4,208 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Antigravity Voice AI</title>
-  <meta name="description" content="Minimalist real-time AI audio conversation powered by Groq and native browser speech recognition." />
+  <meta name="description" content="Practise real-time spoken communication against AI personas that push back like real people." />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="ambient-glow ambient-top"></div>
-  <div class="ambient-glow ambient-bottom"></div>
 
-  <main class="minimal-container">
-    <!-- Interactive Voice Orb with Multi-Layer Ripples -->
+  <!-- ============ INTRODUCTION / MODE SELECTION SCREEN ============ -->
+  <section class="intro-screen" id="intro-screen" aria-labelledby="intro-title">
+    <div class="intro-inner">
+      <header class="intro-header">
+        <div class="intro-topline">
+          <p class="intro-eyebrow">Antigravity Voice</p>
+          <label class="lang-chip" for="lang-select">
+            <span class="lang-chip-globe" aria-hidden="true">◎</span>
+            <select id="lang-select"></select>
+          </label>
+        </div>
+
+        <h1 id="intro-title">Practise the conversations<br />that actually matter</h1>
+        <p class="intro-lede">
+          Real conversations don't go the way you hope. Guilt, pushback, deflection,
+          impatience. Each scenario puts you against an assistant that stays in character
+          and won't make it easy.
+        </p>
+
+        <ol class="how-it-works" aria-label="How it works">
+          <li class="how-step">
+            <span class="how-num" aria-hidden="true">1</span>
+            <span class="how-label">Pick a scenario</span>
+          </li>
+          <li class="how-step">
+            <span class="how-num" aria-hidden="true">2</span>
+            <span class="how-label">Talk &mdash; the mic opens itself</span>
+          </li>
+          <li class="how-step">
+            <span class="how-num" aria-hidden="true">3</span>
+            <span class="how-label">It pushes back until you stop</span>
+          </li>
+        </ol>
+      </header>
+
+      <!-- Square mode tiles. Real <button> elements, so keyboard support is native. -->
+      <div class="mode-grid" id="mode-grid" role="group" aria-label="Conversation modes">
+
+        <button class="mode-card" type="button" data-mode="salary_negotiation" id="card-salary-negotiation" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">💰</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">Salary Negotiation</span>
+            <span class="mode-card-skill">Negotiation &middot; Self-advocacy</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="saying_no" id="card-saying-no" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">🚫</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">Saying No</span>
+            <span class="mode-card-skill">Assertiveness &middot; Boundaries</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="delivering_bad_news" id="card-delivering-bad-news" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">🕯️</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">Delivering Bad News</span>
+            <span class="mode-card-skill">Empathy &middot; Firmness</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="self_intro_60s" id="card-self-intro-60s" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">⏱️</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">60-Second Self-Intro</span>
+            <span class="mode-card-skill">Concision &middot; Being memorable</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="hostile_qa_panel" id="card-hostile-qa-panel" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">⚖️</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">Hostile Q&amp;A Panel</span>
+            <span class="mode-card-skill">Composure &middot; Thinking on your feet</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="b2b_sales_call" id="card-b2b-sales-call" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">📞</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">B2B Sales Call</span>
+            <span class="mode-card-skill">Objections &middot; Persistence</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="supporting_friend" id="card-supporting-friend" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">💙</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">Supporting a Friend</span>
+            <span class="mode-card-skill">Listening &middot; Not fixing</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="confronting_lie" id="card-confronting-lie" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">🗡️</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">Confronting a Lie</span>
+            <span class="mode-card-skill">Directness &middot; Calm under pushback</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="interview" id="card-interview" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">🎯</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">Interview Practice</span>
+            <span class="mode-card-skill">Answers &middot; Composure</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="approaching_girl" id="card-approaching-girl" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">💃</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">Approaching a Girl</span>
+            <span class="mode-card-skill">Rapport &middot; Leading the conversation</span>
+          </span>
+        </button>
+
+        <button class="mode-card" type="button" data-mode="assistant" id="card-assistant" aria-pressed="false">
+          <span class="mode-card-icon" aria-hidden="true">🧠</span>
+          <span class="mode-card-content">
+            <span class="mode-card-title">AI Assistant</span>
+            <span class="mode-card-skill">Thinking out loud &middot; Follow-ups</span>
+          </span>
+        </button>
+
+      </div>
+
+      <p class="intro-note">
+        <strong>Needs a microphone and Chrome or Edge.</strong>
+        Speech is recognised inside your browser &mdash; only text is ever sent to the assistant,
+        so your voice is never uploaded.
+      </p>
+    </div>
+
+    <!-- Sticky session bar: confirms the choice and keeps Start reachable
+         no matter how far the user has scrolled through the grid. -->
+    <div class="session-bar">
+      <div class="session-inner">
+        <span class="session-icon" id="session-icon" aria-hidden="true">💰</span>
+
+        <div class="session-text">
+          <p class="session-title" id="session-title">Salary Negotiation</p>
+          <p class="session-hook" id="session-hook"></p>
+
+          <!-- Interview topic, revealed only when that mode is selected -->
+          <div class="intro-setting" id="topic-container" hidden>
+            <label for="interview-topic">Interview topic or role</label>
+            <input type="text" id="interview-topic"
+                   placeholder="e.g. Python Backend Architecture, Product Management, DSA..." />
+          </div>
+        </div>
+
+        <button class="btn btn-primary session-launch" id="launch-mode-btn" type="button">
+          <span id="launch-label">Start session</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+               stroke-linecap="round" stroke-linejoin="round" class="btn-arrow" aria-hidden="true">
+            <path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONVERSATION SCREEN ============ -->
+  <main class="minimal-container" id="conversation-screen" hidden>
+    <div class="mode-badge-container">
+      <button class="mode-badge-btn" id="switch-mode-btn" type="button" aria-label="Change conversation mode">
+        <span class="mode-badge-dot"></span>
+        <span id="current-mode-label">Mode: Salary Negotiation</span>
+        <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </button>
+    </div>
+
     <div class="orb-container" id="orb-container">
       <div class="orb-ripple ripple-1"></div>
       <div class="orb-ripple ripple-2"></div>
       <div class="orb-ripple ripple-3"></div>
-      <div class="voice-orb" id="voice-orb" role="button" tabindex="0" aria-label="Click to start or stop voice conversation">
-        <svg class="orb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <button class="voice-orb" id="voice-orb" type="button" aria-pressed="false" aria-label="Start voice conversation">
+        <svg class="orb-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
           <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
           <line x1="12" x2="12" y1="19" y2="22"></line>
         </svg>
-      </div>
+      </button>
     </div>
 
-    <div class="orb-status" id="orb-status-text">Tap the orb to speak</div>
+    <!-- aria-live so screen readers announce listening / thinking / speaking -->
+    <div class="orb-status" id="orb-status-text" aria-live="polite">Tap the orb to speak</div>
     <div class="orb-subtext" id="orb-subtext">Continuous voice mode ready</div>
 
-    <!-- Minimalist Live Transcript Pill -->
     <div class="live-transcript-pill">
-      <p class="live-transcript-text placeholder" id="live-transcript">
-        Listening...
-      </p>
-    </div>
-
-    <!-- Hidden controls so script references remain safe -->
-    <div class="controls-row" style="display: none;">
-      <button id="toggle-btn" type="button"></button>
-
-      <!-- Hidden voice select & clear button so script references remain safe if needed -->
-      <button id="clear-btn" type="button" style="display: none;"></button>
-      <select id="voice-select" style="display: none;"></select>
-      <div id="history-list" style="display: none;"></div>
+      <p class="live-transcript-text placeholder" id="live-transcript">Listening...</p>
     </div>
   </main>
 

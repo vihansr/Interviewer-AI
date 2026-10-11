@@ -57,6 +57,7 @@ body {
 .minimal-container {
   width: 100%;
   max-width: 540px;
+  min-height: 100vh;
   padding: 2.5rem 1.5rem;
   z-index: 1;
   display: flex;
@@ -90,6 +91,12 @@ body {
 }
 
 .voice-orb {
+  /* Reset native button chrome - this is a button element for a11y only */
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
   width: 140px;
   height: 140px;
   border-radius: 50%;
@@ -104,6 +111,11 @@ body {
   position: relative;
   z-index: 2;
   user-select: none;
+}
+
+.voice-orb:focus-visible {
+  outline: 3px solid var(--accent-lavender);
+  outline-offset: 6px;
 }
 
 .voice-orb:hover {
@@ -260,3 +272,488 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 14px 28px -5px rgba(15, 23, 42, 0.32);
 }
+
+/* ==========================================================================
+   INTRODUCTION SCREEN
+   ========================================================================== */
+
+[hidden] { display: none !important; }
+
+.intro-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(2rem, 6vh, 4.5rem) 1.5rem 12rem;
+  animation: intro-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes intro-rise {
+  0% { opacity: 0; transform: translateY(16px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.intro-inner {
+  width: 100%;
+  max-width: 1040px;
+}
+
+.intro-header {
+  text-align: center;
+  margin-bottom: clamp(2rem, 5vh, 3.25rem);
+}
+
+.intro-eyebrow {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent-peach);
+  margin-bottom: 0;
+}
+
+.intro-header h1 {
+  font-size: clamp(1.9rem, 4.6vw, 3rem);
+  font-weight: 700;
+  line-height: 1.14;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.intro-lede {
+  max-width: 58ch;
+  margin: 0 auto;
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  line-height: 1.65;
+  color: var(--text-secondary);
+}
+
+/* Square tiles, reflowing from 5 across on desktop to 1 on phones */
+.mode-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+  gap: clamp(0.9rem, 2vw, 1.35rem);
+  margin-bottom: clamp(2rem, 5vh, 3rem);
+}
+
+/* ==========================================================================
+   SQUARE MODE TILES
+   ========================================================================== */
+
+/* One accent triple per mode. The shared selected-state rules below read
+   these custom properties, so adding a mode needs no new state rules. */
+.mode-card[data-mode="approaching_girl"]    { --m-accent: #fb923c; --m-tint: rgba(255, 247, 237, 0.95); --m-icon: #ffedd5; --m-glow: rgba(251, 146, 60, 0.28); }
+.mode-card[data-mode="interview"]          { --m-accent: #c084fc; --m-tint: rgba(250, 245, 255, 0.95); --m-icon: #f3e8ff; --m-glow: rgba(192, 132, 252, 0.30); }
+.mode-card[data-mode="assistant"]          { --m-accent: #10b981; --m-tint: rgba(236, 253, 245, 0.95); --m-icon: #d1fae5; --m-glow: rgba(16, 185, 129, 0.26); }
+.mode-card[data-mode="salary_negotiation"] { --m-accent: #f43f5e; --m-tint: rgba(255, 241, 242, 0.95); --m-icon: #ffe4e6; --m-glow: rgba(244, 63, 94, 0.26); }
+.mode-card[data-mode="saying_no"]          { --m-accent: #f59e0b; --m-tint: rgba(255, 251, 235, 0.95); --m-icon: #fef3c7; --m-glow: rgba(245, 158, 11, 0.26); }
+.mode-card[data-mode="delivering_bad_news"] { --m-accent: #0ea5e9; --m-tint: rgba(240, 249, 255, 0.95); --m-icon: #e0f2fe; --m-glow: rgba(14, 165, 233, 0.26); }
+.mode-card[data-mode="self_intro_60s"]     { --m-accent: #14b8a6; --m-tint: rgba(240, 253, 250, 0.95); --m-icon: #ccfbf1; --m-glow: rgba(20, 184, 166, 0.26); }
+.mode-card[data-mode="hostile_qa_panel"]   { --m-accent: #6366f1; --m-tint: rgba(238, 242, 255, 0.95); --m-icon: #e0e7ff; --m-glow: rgba(99, 102, 241, 0.26); }
+.mode-card[data-mode="b2b_sales_call"]     { --m-accent: #059669; --m-tint: rgba(236, 253, 245, 0.95); --m-icon: #d1fae5; --m-glow: rgba(5, 150, 105, 0.26); }
+.mode-card[data-mode="supporting_friend"]  { --m-accent: #8b5cf6; --m-tint: rgba(245, 243, 255, 0.95); --m-icon: #ede9fe; --m-glow: rgba(139, 92, 246, 0.26); }
+.mode-card[data-mode="confronting_lie"]    { --m-accent: #d946ef; --m-tint: rgba(253, 242, 255, 0.95); --m-icon: #fae8ff; --m-glow: rgba(217, 70, 239, 0.26); }
+
+.mode-card {
+  appearance: none;
+  -webkit-appearance: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  aspect-ratio: 1 / 1;
+  padding: 1.2rem 0.95rem;
+  border-radius: 22px;
+  border: 2px solid rgba(226, 232, 240, 0.85);
+  background: #ffffff;
+  box-shadow: 0 10px 24px -14px rgba(30, 41, 59, 0.14);
+  font-family: inherit;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.25s ease,
+              box-shadow 0.25s ease,
+              background 0.25s ease;
+}
+
+.mode-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--m-accent, var(--accent-peach));
+  box-shadow: 0 18px 32px -16px rgba(30, 41, 59, 0.22);
+}
+
+.mode-card:focus-visible {
+  border-color: var(--m-accent, var(--accent-peach));
+  box-shadow: 0 0 0 4px var(--m-glow, rgba(148, 163, 184, 0.35));
+}
+
+.mode-card[aria-pressed="true"] {
+  border-color: var(--m-accent);
+  background: linear-gradient(135deg, var(--m-tint), rgba(255, 255, 255, 0.98));
+  box-shadow: 0 18px 36px -14px var(--m-glow);
+  transform: translateY(-3px);
+}
+
+.mode-card[aria-pressed="true"] .mode-card-icon {
+  background: var(--m-icon);
+  transform: scale(1.06);
+}
+
+.mode-card-icon {
+  font-size: 2.1rem;
+  background: #f8fafc;
+  width: 62px;
+  height: 62px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px -2px rgba(30, 41, 59, 0.05);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.mode-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.32rem;
+}
+
+.mode-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.mode-card-skill {
+  font-size: 0.77rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+/* ==========================================================================
+   HOW IT WORKS + PRE-FLIGHT NOTE
+   ========================================================================== */
+
+.how-it-works {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 1.6rem;
+  margin-top: 2rem;
+}
+
+.how-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.how-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(251, 146, 60, 0.14);
+  color: var(--accent-peach);
+  font-size: 0.74rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.how-label {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.intro-note {
+  max-width: 62ch;
+  margin: 2.5rem auto 0;
+  text-align: center;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.intro-note strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   LANGUAGE CHIP (header)
+   ========================================================================== */
+
+.intro-topline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.lang-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  background: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lang-chip:hover {
+  border-color: rgba(203, 213, 225, 0.95);
+  background: #ffffff;
+}
+
+.lang-chip-globe {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  line-height: 1;
+}
+
+.lang-chip select {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  outline: none;
+}
+
+.lang-chip select:focus-visible {
+  outline: 2px solid var(--accent-lavender);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   TILE HIERARCHY - de-emphasise everything that isn't the chosen mode
+   ========================================================================== */
+
+.mode-grid.has-selection .mode-card:not([aria-pressed="true"]) {
+  opacity: 0.5;
+  transform: scale(0.975);
+}
+
+.mode-grid.has-selection .mode-card:not([aria-pressed="true"]):hover {
+  opacity: 0.85;
+  transform: translateY(-4px);
+}
+
+/* ==========================================================================
+   SESSION BAR - sticky summary + primary CTA
+   ========================================================================== */
+
+.session-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-top: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 -10px 30px -18px rgba(15, 23, 42, 0.32);
+  animation: bar-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes bar-rise {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+
+.session-inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0.9rem 1.5rem;
+}
+
+.session-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 2px solid transparent;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.session-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.session-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.session-hook {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  margin-top: 0.15rem;
+}
+
+.session-launch {
+  flex-shrink: 0;
+  justify-content: center;
+  padding: 0.95rem 1.75rem;
+  font-size: 0.98rem;
+  white-space: nowrap;
+}
+
+.btn-arrow {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.25s ease;
+}
+
+.session-launch:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Contextual field inside the bar (interview topic) */
+.intro-setting {
+  margin-top: 0.85rem;
+  animation: fade-slide-down 0.25s ease;
+}
+
+.intro-setting label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 0.35rem;
+}
+
+.intro-setting input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  border: 2px solid rgba(226, 232, 240, 0.95);
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text-primary);
+  outline: none;
+  transition: all 0.2s ease;
+  background: #f8fafc;
+}
+
+.intro-setting input:focus {
+  border-color: var(--accent-lavender);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(192, 132, 252, 0.18);
+}
+
+@keyframes fade-slide-down {
+  0% { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   NARROW VIEWPORTS
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .intro-topline {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .session-inner {
+    flex-wrap: wrap;
+    padding: 0.85rem 1.1rem;
+  }
+
+  .session-icon {
+    width: 42px;
+    height: 42px;
+    font-size: 1.3rem;
+  }
+
+  .session-launch {
+    width: 100%;
+  }
+}
+
+/* Mode Indicator Badge Button */
+.mode-badge-container {
+  margin-bottom: 1.6rem;
+  display: flex;
+  justify-content: center;
+}
+
+.mode-badge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.6rem 1.3rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 4px 15px -3px rgba(30, 41, 59, 0.05);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  outline: none;
+}
+
+.mode-badge-btn:hover {
+  background: #ffffff;
+  color: var(--text-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px -4px rgba(30, 41, 59, 0.09);
+  border-color: rgba(203, 213, 225, 0.9);
+}
+
+/* Colour is inherited from the selected tile's --m-accent, set in app.js */
+.mode-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--m-accent, var(--accent-peach));
+  box-shadow: 0 0 8px var(--m-accent, var(--accent-peach));
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.badge-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted);
+}
+
