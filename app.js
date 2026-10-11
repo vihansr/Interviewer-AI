@@ -47,6 +47,34 @@ const MAX_STORED_TURNS = 20;
 // instead of wiping className.
 const ORB_STATES = ['listening', 'thinking', 'speaking'];
 
+// Microphone re-arming. A single fixed delay turns a silent or blocked mic
+// into a hot loop, so restarts back off and give up.
+const REARM_BASE_MS = 450;
+const REARM_MAX_MS = 4000;
+const MAX_SILENT_RESTARTS = 6;
+
+// Recognition errors that can never succeed on retry.
+const FATAL_RECOGNITION_ERRORS = new Set([
+  'not-allowed',           // microphone permission denied
+  'service-not-allowed',   // blocked by policy, or an insecure origin
+  'audio-capture',         // no microphone hardware
+  'language-not-supported',
+]);
+
+const RECOGNITION_ERROR_MESSAGES = {
+  'not-allowed': 'Microphone blocked',
+  'service-not-allowed': 'Microphone blocked',
+  'audio-capture': 'No microphone found',
+  'language-not-supported': 'Language unsupported',
+};
+
+// Consecutive re-arms that produced no speech. Reset whenever the user is heard.
+let recognitionRestarts = 0;
+
+// Set when a fatal mic error was reported, so the resulting onend does not
+// overwrite the message the user needs to see. Cleared when they retry.
+let recognitionBlocked = false;
+
 // --------------------------------------------------------------------------
 // Mode catalogue. One entry per mode; the tile, badge, orb copy and greeting
 // all derive from here, so adding a mode does not add another if/else chain.
@@ -357,27 +385,51 @@ if (!SpeechRecognition) {
     }
 
     if (finalTranscript) {
+      // The user was actually heard, so the silence/backoff budget is restored.
+      resetRestartCounter();
       liveTranscript.textContent = finalTranscript;
       handleUserUtterance(finalTranscript.trim());
     }
   };
 
   recognition.onerror = (event) => {
-    console.error('Speech recognition error:', event.error);
-    if (event.error !== 'no-speech') {
-      setOrbState('idle', 'Ready', 'Click the orb to start speaking');
-    }
+    const err = event.error;
     isListening = false;
+
+    // Errors that will never succeed on retry. Retrying these spins the loop at
+    // a few attempts per second forever, so stop and tell the user what to fix.
+    if (FATAL_RECOGNITION_ERRORS.has(err)) {
+      // abort() below fires onend asynchronously, which would overwrite this
+      // message, so flag it until the user deliberately retries.
+      recognitionBlocked = true;
+      stopLoop();
+      hardStopRecognition();
+      setOrbState('idle', RECOGNITION_ERROR_MESSAGES[err] || 'Microphone unavailable',
+                  'Press the orb to try again');
+      return;
+    }
+
+    // 'no-speech' and 'aborted' are routine - onend re-arms with backoff.
+    if (err !== 'no-speech') {
+      console.warn('Recognition error:', err);
+    }
   };
 
   recognition.onend = () => {
     isListening = false;
     if (isContinuousLoop && !isThinking && !isSpeaking) {
-      setTimeout(() => startRecognition(), 350);
-    } else if (!isThinking && !isSpeaking) {
+      scheduleRecognitionRestart();
+    } else if (!isThinking && !isSpeaking && !recognitionBlocked) {
+      resetRestartCounter();
       setOrbState('idle', 'Ready', 'Click the orb to start speaking');
     }
   };
+}
+
+// Halt the recognition engine so no further events fire into a dead loop.
+function hardStopRecognition() {
+  if (!recognition) return;
+  try { recognition.abort(); } catch (e) { /* already stopped */ }
 }
 
 // Chrome throws InvalidStateError if start() is called while the engine is
@@ -389,6 +441,39 @@ function startRecognition() {
   } catch (e) {
     console.warn('recognition.start() failed:', e && e.message);
   }
+}
+
+// Re-arm the microphone, backing off each time so a silent or blocked mic
+// cannot become a hot loop. Gives up after a run of silent attempts.
+function scheduleRecognitionRestart() {
+  if (recognitionRestarts >= MAX_SILENT_RESTARTS) {
+    stopLoop();
+    setOrbState('idle', "I can't hear anything",
+                'Check your microphone, then press the orb');
+    return;
+  }
+
+  const delay = Math.min(
+    REARM_BASE_MS * Math.pow(1.6, recognitionRestarts),
+    REARM_MAX_MS
+  );
+  recognitionRestarts += 1;
+
+  setTimeout(() => {
+    if (isContinuousLoop && !isListening && !isThinking && !isSpeaking) {
+      startRecognition();
+    }
+  }, delay);
+}
+
+// Real progress: the user was heard, so the next restart starts fresh.
+function resetRestartCounter() {
+  recognitionRestarts = 0;
+}
+
+function stopLoop() {
+  isContinuousLoop = false;
+  updatePressedState();
 }
 
 // Load voices for TTS. Chrome populates the voice list asynchronously and may
@@ -455,8 +540,8 @@ async function handleUserUtterance(userText) {
   if (!userText) return;
 
   if (isStopCommand(userText)) {
-    isContinuousLoop = false;
-    updatePressedState();
+    stopLoop();
+    hardStopRecognition();
     if (activeController) activeController.abort();
     cancelSpeech();
     const farewell = 'Goodbye! Have a great day.';
@@ -575,7 +660,7 @@ function speakAIResponse(text) {
   utterance.onend = () => {
     isSpeaking = false;
     if (isContinuousLoop) {
-      setTimeout(() => startRecognition(), 350);
+      scheduleRecognitionRestart();
     } else {
       setOrbState('idle', 'Ready', 'Click the orb to speak again');
     }
@@ -602,7 +687,7 @@ function toggleListening() {
   if (!recognition) return;
 
   if (isListening || isContinuousLoop) {
-    isContinuousLoop = false;
+    stopLoop();
     // Reset the flags ourselves: stop()/cancel() do not guarantee onend/onerror.
     isListening = false;
     isSpeaking = false;
@@ -612,6 +697,9 @@ function toggleListening() {
     setOrbState('idle', 'Ready', 'Click the orb to start speaking');
   } else {
     isContinuousLoop = true;
+    resetRestartCounter();
+    // A previous fatal error is worth one more try now that they've asked again.
+    recognitionBlocked = false;
     cancelSpeech();
 
     const greeting = buildGreeting();

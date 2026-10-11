@@ -66,6 +66,23 @@ logging `try/catch` (Chrome throws `InvalidStateError` on a double start).
 exit path, reset them there too. If these flags get stuck `true`, the re-arm guard blocks forever
 and the app silently dies until reload.
 
+**Recognition errors must not be retried blindly.** `onend` re-arms the mic whenever the loop is
+live, so an `onerror` that leaves `isContinuousLoop` true turns any persistent mic problem into a
+hot loop — `recognition.start()` firing roughly three times a second, forever. Two guards prevent
+this:
+
+- `FATAL_RECOGNITION_ERRORS` (`not-allowed`, `service-not-allowed`, `audio-capture`,
+  `language-not-supported`) can never succeed on retry. They call `stopLoop()` and show a
+  message. `recognitionBlocked` is set because `abort()` fires `onend` asynchronously, which would
+  otherwise overwrite that message with "Ready"; it clears only when the user presses the orb.
+- Everything else is treated as transient and goes through `scheduleRecognitionRestart()`, which
+  backs off `450ms * 1.6^n` capped at `4000ms` and gives up after `MAX_SILENT_RESTARTS` (6) with
+  *"I can't hear anything"*. The counter resets on any final result and when the user starts the
+  loop, so a normal conversation never accumulates it.
+
+Never add a bare `setTimeout(() => startRecognition(), <fixed>)` — route through
+`scheduleRecognitionRestart()`.
+
 `setOrbState(state, statusText, subtext)` is the single UI state entry point. It removes only the
 known classes in `ORB_STATES` — never wipe `className`, other classes may be present.
 
